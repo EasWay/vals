@@ -24,12 +24,23 @@ function moveButtonRandomly() {
   const maxX = window.innerWidth - buttonWidth;
   const maxY = window.innerHeight - buttonHeight;
 
-  // Generate random X and Y positions within the viewport
-  const randomX = Math.random() * maxX;
-  const randomY = Math.random() * maxY;
+  // Get the current position of the button
+  const currentX = parseInt(noButton.style.left) || 0;
+  const currentY = parseInt(noButton.style.top) || 0;
+
+  // Define a small movement range (e.g., 50px in any direction)
+  const movementRange = 50;
+
+  // Calculate new X and Y positions within the movement range
+  let newX = currentX + (Math.random() * movementRange * 2 - movementRange);
+  let newY = currentY + (Math.random() * movementRange * 2 - movementRange);
+
+  // Ensure the new position stays within the viewport
+  newX = Math.max(0, Math.min(newX, maxX));
+  newY = Math.max(0, Math.min(newY, maxY));
 
   // Move the button to the new position
   noButton.style.position = "absolute";
-  noButton.style.left = `${randomX}px`;
-  noButton.style.top = `${randomY}px`;
+  noButton.style.left = `${newX}px`;
+  noButton.style.top = `${newY}px`;
 }

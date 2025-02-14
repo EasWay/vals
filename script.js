@@ -9,17 +9,27 @@ yesButton.addEventListener("click", () => {
 });
 
 noButton.addEventListener("mouseover", () => {
-  const x = Math.random() * (window.innerWidth - 100);
-  const y = Math.random() * (window.innerHeight - 50);
-  noButton.style.position = "absolute";
-  noButton.style.left = `${x}px`;
-  noButton.style.top = `${y}px`;
+  moveButtonRandomly();
 });
 
 noButton.addEventListener("click", () => {
-  const x = Math.random() * (window.innerWidth - 100);
-  const y = Math.random() * (window.innerHeight - 50);
-  noButton.style.position = "absolute";
-  noButton.style.left = `${x}px`;
-  noButton.style.top = `${y}px`;
+  moveButtonRandomly();
 });
+
+function moveButtonRandomly() {
+  const buttonWidth = noButton.offsetWidth;
+  const buttonHeight = noButton.offsetHeight;
+
+  // Calculate maximum X and Y positions to keep the button within the viewport
+  const maxX = window.innerWidth - buttonWidth;
+  const maxY = window.innerHeight - buttonHeight;
+
+  // Generate random X and Y positions within the viewport
+  const randomX = Math.random() * maxX;
+  const randomY = Math.random() * maxY;
+
+  // Move the button to the new position
+  noButton.style.position = "absolute";
+  noButton.style.left = `${randomX}px`;
+  noButton.style.top = `${randomY}px`;
+}

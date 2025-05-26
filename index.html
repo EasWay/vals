@@ -1,34 +1,1389 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Will You Be My Valentine?</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDK vs NDK - Mobile Development</title>
+    <!-- Inter font included inline -->
+    <style>
+        /* Inter font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        /* Base Styles and Variables */
+        :root {
+            /* Color Palette */
+            --primary-color: #4a6fff;
+            --secondary-color: #34c3ff;
+            --accent-color: #ff6b6b;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --text-tertiary: #a0aec0;
+            --bg-gradient-start: #e6f0ff;
+            --bg-gradient-end: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --sidebar-bg: rgba(255, 255, 255, 0.9);
+            
+            /* Shadows and Effects */
+            --neumorphic-shadow-light: 8px 8px 16px rgba(174, 174, 192, 0.2);
+            --neumorphic-shadow-dark: -8px -8px 16px rgba(255, 255, 255, 0.7);
+            --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+            --card-border: 1px solid rgba(255, 255, 255, 0.18);
+            
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-xxl: 3rem;
+            
+            /* Border Radius */
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 24px;
+            --border-radius-circle: 50%;
+        }
+
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+        }
+
+        h4 {
+            font-size: 1.125rem;
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            padding: var(--spacing-md);
+            gap: var(--spacing-lg);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            height: 100%;
+            background: var(--sidebar-bg);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--neumorphic-shadow-light);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--card-border);
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--border-radius-circle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            margin-right: var(--spacing-md);
+            box-shadow: var(--neumorphic-shadow-light);
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            min-height: 48px; /* Increased for better touch targets */
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(255, 255, 255, 0.7);
+            color: var(--primary-color);
+            box-shadow: var(--neumorphic-shadow-light);
+        }
+
+        .sidebar-nav li.active a {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary-color);
+            box-shadow: var(--neumorphic-shadow-light);
+        }
+
+        .sidebar-nav svg {
+            width: 20px;
+            height: 20px;
+            margin-right: var(--spacing-md);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            overflow: hidden;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg);
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--neumorphic-shadow-light);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--card-border);
+        }
+
+        .page-title h1 {
+            margin-bottom: 0;
+        }
+
+        .page-title p {
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .theme-toggle, .notification, .profile-avatar {
+            cursor: pointer;
+            min-width: 48px; /* Increased for better touch targets */
+            min-height: 48px; /* Increased for better touch targets */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle svg, .notification svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .theme-toggle:hover svg, .notification:hover svg {
+            color: var(--primary-color);
+        }
+
+        .avatar-circle {
+            width: 40px; /* Increased for better touch targets */
+            height: 40px; /* Increased for better touch targets */
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--border-radius-circle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .avatar-circle svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: var(--spacing-sm);
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+
+        .dashboard-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dashboard-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .dashboard-content::-webkit-scrollbar-thumb {
+            background-color: var(--text-tertiary);
+            border-radius: 20px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            margin-bottom: var(--spacing-xxl);
+        }
+
+        .section-header {
+            margin-bottom: var(--spacing-xl);
+            text-align: center;
+        }
+
+        .section-header h2 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Overview Cards */
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .overview-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--neumorphic-shadow-light);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--card-border);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--border-radius-circle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-lg);
+        }
+
+        .card-icon svg {
+            width: 30px;
+            height: 30px;
+            color: white;
+        }
+
+        .sdk-icon {
+            background: linear-gradient(135deg, #4a6fff, #6a8fff);
+        }
+
+        .ndk-icon {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+        }
+
+        .diff-icon {
+            background: linear-gradient(135deg, #34c3ff, #5ad0ff);
+        }
+
+        .overview-card h3 {
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .overview-card p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card-link {
+            display: inline-block;
+            padding: var(--spacing-md) var(--spacing-lg); /* Increased for better touch targets */
+            background: rgba(74, 111, 255, 0.1);
+            color: var(--primary-color);
+            border-radius: var(--border-radius-md);
+            font-weight: 500;
+            transition: background 0.3s ease;
+            min-height: 48px; /* Increased for better touch targets */
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-link:hover {
+            background: rgba(74, 111, 255, 0.2);
+        }
+
+        /* Content Cards */
+        .content-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .content-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--neumorphic-shadow-light);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--card-border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .content-card h3 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Component Grid */
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .component-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .component-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(74, 111, 255, 0.1);
+            border-radius: var(--border-radius-circle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--spacing-md);
+            flex-shrink: 0;
+        }
+
+        .component-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary-color);
+        }
+
+        .component-text h4 {
+            font-size: 1rem;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-primary);
+        }
+
+        .component-text p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Differences Container */
+        .differences-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .difference-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--neumorphic-shadow-light);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--card-border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .difference-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .difference-card h3 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .difference-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .comparison-item {
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-md);
+        }
+
+        .comparison-item.sdk {
+            background: rgba(74, 111, 255, 0.05);
+        }
+
+        .comparison-item.ndk {
+            background: rgba(255, 107, 107, 0.05);
+        }
+
+        .comparison-item h4 {
+            font-size: 1rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .comparison-item.sdk h4 {
+            color: var(--primary-color);
+        }
+
+        .comparison-item.ndk h4 {
+            color: var(--accent-color);
+        }
+
+        .comparison-item p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-container {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                margin-bottom: var(--spacing-lg);
+            }
+            
+            .sidebar-nav ul {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            
+            .sidebar-nav li {
+                margin-right: var(--spacing-md);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-cards, .overview-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .component-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .page-title {
+                margin-bottom: var(--spacing-md);
+                width: 100%;
+            }
+            
+            .page-title h1 {
+                font-size: 1.5rem;
+            }
+            
+            .user-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .dashboard-container {
+                padding: var(--spacing-sm);
+            }
+            
+            .sidebar-nav a {
+                padding: var(--spacing-md) var(--spacing-lg);
+            }
+            
+            .card-link {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        /* Animation Classes */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        /* Neumorphic and Glassmorphism Effects */
+        .neumorphic {
+            box-shadow: var(--neumorphic-shadow-light), var(--neumorphic-shadow-dark);
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+        }
+
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: var(--glass-shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--card-border);
+            border-radius: var(--border-radius-lg);
+        }
+
+        .floating {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .floating:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glass-shadow);
+        }
+        
+        /* Dark Theme */
+        body.dark-theme {
+            --bg-gradient-start: #1a202c;
+            --bg-gradient-end: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #e2e8f0;
+            --text-tertiary: #cbd5e0;
+            --card-bg: rgba(26, 32, 44, 0.85);
+            --sidebar-bg: rgba(26, 32, 44, 0.9);
+            --neumorphic-shadow-light: 8px 8px 16px rgba(0, 0, 0, 0.3);
+            --neumorphic-shadow-dark: -8px -8px 16px rgba(45, 55, 72, 0.5);
+        }
+        
+        body.dark-theme .comparison-item.sdk {
+            background: rgba(74, 111, 255, 0.15);
+        }
+        
+        body.dark-theme .comparison-item.ndk {
+            background: rgba(255, 107, 107, 0.15);
+        }
+        
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            cursor: pointer;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius-md);
+            background: var(--card-bg);
+            box-shadow: var(--neumorphic-shadow-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        
+        .mobile-menu-toggle svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-primary);
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: flex;
+                position: fixed;
+                top: 16px;
+                left: 16px;
+            }
+            
+            .sidebar {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 100;
+                border-radius: 0;
+                padding-top: 80px;
+            }
+            
+            .sidebar.active {
+                display: flex;
+            }
+            
+            .main-content {
+                padding-top: 60px;
+            }
+            
+            .dashboard-container {
+                padding: var(--spacing-sm);
+            }
+            
+            /* Improve mobile scrolling */
+            .dashboard-content {
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 60px;
+            }
+            
+            /* Ensure touch targets are large enough */
+            .sidebar-nav a, 
+            .card-link, 
+            .theme-toggle, 
+            .notification, 
+            .profile-avatar,
+            .mobile-menu-toggle {
+                min-height: 48px;
+                min-width: 48px;
+            }
+            
+            /* Improve mobile navigation */
+            .sidebar-nav ul {
+                flex-direction: column;
+            }
+            
+            .sidebar-nav li {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+        
+        /* Close button for mobile menu */
+        .close-menu {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 48px;
+            height: 48px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg);
+            border-radius: var(--border-radius-circle);
+            cursor: pointer;
+            z-index: 150;
+        }
+        
+        .close-menu svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-primary);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar.active .close-menu {
+                display: flex;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="emoji-container">
-    <div class="emoji">❤️</div>
-    <div class="emoji">💕</div>
-    <div class="emoji">💖</div>
-    <div class="emoji">💘</div>
-    <div class="emoji">💓</div>
-    <div class="emoji">💗</div>
-  </div>
-  <div class="container">
-    <h1>Will you be my valentine?</h1>
-    <div class="buttons">
-      <button id="yesButton">Yes</button>
-      <button id="noButton">No</button>
+    <div class="dashboard-container">
+        <!-- Mobile Menu Toggle -->
+        <div class="mobile-menu-toggle" id="mobileMenuToggle">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </div>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="close-menu" id="closeMenu">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </div>
+            <div class="logo">
+                <div class="logo-icon">MD</div>
+                <span class="logo-text">MobileDev</span>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="#overview" title="Overview">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#sdk" title="SDK">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <span>SDK</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#ndk" title="NDK">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 10h-4V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v6H2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2z"></path>
+                            </svg>
+                            <span>NDK</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#differences" title="Differences">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            <span>Differences</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Navigation Bar -->
+            <header class="top-nav">
+                <div class="page-title">
+                    <h1>Mobile Development Toolkit Comparison</h1>
+                    <p>Understanding SDK and NDK for Android Development</p>
+                </div>
+                <div class="user-actions">
+                    <div class="theme-toggle" id="themeToggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </div>
+                    <div class="notification">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </div>
+                    <div class="profile-avatar">
+                        <div class="avatar-circle">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Overview Section -->
+                <section id="overview" class="content-section">
+                    <div class="section-header">
+                        <h2>Understanding SDK and NDK</h2>
+                        <p>Explore the key differences between Software Development Kit (SDK) and Native Development Kit (NDK) in mobile application development.</p>
+                    </div>
+                    
+                    <div class="overview-cards">
+                        <div class="overview-card">
+                            <div class="card-icon sdk-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </div>
+                            <h3>Software Development Kit</h3>
+                            <p>A set of software tools and programs provided by hardware and software vendors that developers can use to build applications for specific platforms.</p>
+                            <a href="#sdk" class="card-link">Learn more</a>
+                        </div>
+                        
+                        <div class="overview-card">
+                            <div class="card-icon ndk-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 10h-4V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v6H2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2z"></path>
+                                </svg>
+                            </div>
+                            <h3>Native Development Kit</h3>
+                            <p>A toolset that lets developers implement parts of their app in native code, using languages such as C and C++ for performance-critical portions.</p>
+                            <a href="#ndk" class="card-link">Learn more</a>
+                        </div>
+                        
+                        <div class="overview-card">
+                            <div class="card-icon diff-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                                </svg>
+                            </div>
+                            <h3>Key Differences</h3>
+                            <p>Explore 10 key differences between SDK and NDK, including programming languages, performance, complexity, and use cases.</p>
+                            <a href="#differences" class="card-link">Learn more</a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SDK Section -->
+                <section id="sdk" class="content-section">
+                    <div class="section-header">
+                        <h2>Software Development Kit (SDK)</h2>
+                        <p>A comprehensive toolkit for building complete applications</p>
+                    </div>
+                    
+                    <div class="content-cards">
+                        <div class="content-card">
+                            <h3>What is SDK?</h3>
+                            <p>A Software Development Kit (SDK) is a set of software tools and programs provided by hardware and software vendors that developers can use to build applications for specific platforms. SDKs help developers easily integrate their apps with a vendor's services.</p>
+                        </div>
+                        
+                        <div class="content-card">
+                            <h3>Components of SDK</h3>
+                            <div class="component-grid">
+                                <div class="component-item">
+                                    <div class="component-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="component-text">
+                                        <h4>Libraries</h4>
+                                        <p>Collection of reusable and packaged pieces of code that perform specific functions</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="component-item">
+                                    <div class="component-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="16 18 22 12 16 6"></polyline>
+                                            <polyline points="8 6 2 12 8 18"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="component-text">
+                                        <h4>APIs</h4>
+                                        <p>Predefined pieces of code that let developers perform common programming tasks</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="component-item">
+                                    <div class="component-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="component-text">
+                                        <h4>IDEs</h4>
+                                        <p>Visual editors that help with the design and layout of graphical elements</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="component-item">
+                                    <div class="component-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="component-text">
+                                        <h4>Testing Tools</h4>
+                                        <p>Debugging tools to help developers identify coding errors at various stages</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="component-item">
+                                    <div class="component-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="component-text">
+                                        <h4>Documentation</h4>
+                                        <p>Instructions and tutorials to help developers through development stages</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="content-card">
+                            <h3>Benefits of SDK</h3>
+                            <p>SDKs offer numerous advantages for developers, including time-saving by providing pre-built components, easier integration with services, enhanced functionality through additional features, improved brand credibility as apps are less prone to crashes, cost savings through shorter development cycles, and customization options for personalized user experiences.</p>
+                        </div>
+                        
+                        <div class="content-card">
+                            <h3>Examples of SDK</h3>
+                            <p>Common examples include iOS SDK for building iOS apps, Android SDK for Android apps, Google Cloud SDK, Microsoft Windows SDK, Java Development Kit, and Node.js SDK. These SDKs provide comprehensive tools for developing applications on their respective platforms.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NDK Section -->
+                <section id="ndk" class="content-section">
+                    <div class="section-header">
+                        <h2>Native Development Kit (NDK)</h2>
+                        <p>A toolset for implementing performance-critical components in native code</p>
+                    </div>
+                    
+                    <div class="content-cards">
+                        <div class="content-card">
+                            <h3>What is NDK?</h3>
+                            <p>The Native Development Kit (NDK) is a toolset that lets developers implement parts of their app in native code, using languages such as C and C++. It's specifically designed for Android development to allow integration of native code components for performance-critical portions of applications.</p>
+                        </div>
+                        
+                        <div class="content-card">
+                            <h3>Components of NDK</h3>
+                            <div class="component-grid">
+                                <div class="component-item">
+                                    <div class="component-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="component-text">
+                                        <h4>Native Libraries</h4>
+                                        <p>Headers and libraries for native code development</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="component-item">
+                                    <div class="component-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="component-text">
+                                        <h4>Build Tools</h4>
+                                        <p>Tools for compiling native code for different architectures</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="component-item">
+                                    <div class="component-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="16 18 22 12 16 6"></polyline>
+                                            <polyline points="8 6 2 12 8 18"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="component-text">
+                                        <h4>JNI</h4>
+                                        <p>Java Native Interface for communication between Java and native code</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="component-item">
+                                    <div class="component-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="component-text">
+                                        <h4>Makefiles</h4>
+                                        <p>Files for specifying platform targets and build configurations</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="component-item">
+                                    <div class="component-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="component-text">
+                                        <h4>Debugging Tools</h4>
+                                        <p>Specialized tools for debugging native code in applications</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="content-card">
+                            <h3>Use Cases for NDK</h3>
+                            <p>NDK is particularly useful for high-performance applications requiring processor-dependent code, reusing existing C/C++ libraries in Android apps, accessing physical device components like sensors, and computationally intensive operations such as graphics rendering, physics simulations, and signal processing.</p>
+                        </div>
+                        
+                        <div class="content-card">
+                            <h3>How NDK Works</h3>
+                            <p>The NDK workflow involves writing C/C++ code, creating a Makefile specifying the target platform, using the ndk-build command to build shared object libraries (.so files), and then having the Java program use these libraries and call native functions through the Java Native Interface (JNI).</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Differences Section -->
+                <section id="differences" class="content-section">
+                    <div class="section-header">
+                        <h2>10 Key Differences Between SDK and NDK</h2>
+                        <p>Understanding when to use each development toolkit</p>
+                    </div>
+                    
+                    <div class="differences-container" id="differences-container">
+                        <!-- Differences will be loaded here via JavaScript -->
+                    </div>
+                </section>
+            </div>
+        </main>
     </div>
-    <div id="videoContainer" class="hidden">
-      <video id="videoPlayer" autoplay loop playsinline>
-        <source src="bunny-hug.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-      <p>❤️💕 Happy Valentine's Day! 💕❤️</p>
-    </div>
-  </div>
-  <script src="script.js"></script>
+
+    <script>
+        // JavaScript for SDK vs NDK Website
+        
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load the differences data
+            loadDifferences();
+            
+            // Add event listeners for interactive elements
+            addEventListeners();
+            
+            // Add animation classes to elements
+            animateElements();
+        });
+        
+        // Differences between SDK and NDK
+        const differences = [
+            {
+                title: "Programming Languages",
+                sdk: "SDK primarily supports high-level languages like Java and Kotlin for Android development.",
+                ndk: "NDK enables the use of native languages like C and C++ in Android applications."
+            },
+            {
+                title: "Purpose and Focus",
+                sdk: "SDK provides a complete development environment for creating entire applications for specific platforms.",
+                ndk: "NDK is specifically designed for implementing performance-critical portions of applications in native code."
+            },
+            {
+                title: "Performance Characteristics",
+                sdk: "SDK applications typically run in a virtual machine (like Java Virtual Machine), which may have performance overhead.",
+                ndk: "NDK allows direct compilation to native machine code, potentially offering better performance for computationally intensive tasks."
+            },
+            {
+                title: "Use Case Scenarios",
+                sdk: "SDK is ideal for general application development where platform-specific features and standard performance are sufficient.",
+                ndk: "NDK is best suited for applications requiring high performance, such as games, physics simulations, signal processing, or when reusing existing C/C++ libraries."
+            },
+            {
+                title: "Complexity Level",
+                sdk: "SDK development is generally more straightforward and has a gentler learning curve.",
+                ndk: "NDK development is more complex, requiring knowledge of native languages and understanding of memory management, JNI, and platform-specific considerations."
+            },
+            {
+                title: "Debugging and Maintenance",
+                sdk: "SDK applications are typically easier to debug with comprehensive tools and automatic memory management.",
+                ndk: "NDK code can be more challenging to debug, requiring specialized tools and manual memory management."
+            },
+            {
+                title: "Portability",
+                sdk: "SDK applications are more portable across different devices and platforms due to the abstraction layer provided by the virtual machine.",
+                ndk: "NDK code needs to be compiled specifically for each target architecture (ARM, x86, etc.), potentially requiring multiple builds."
+            },
+            {
+                title: "Integration Method",
+                sdk: "SDK components are directly integrated into the application development workflow.",
+                ndk: "NDK requires additional steps including JNI (Java Native Interface) to bridge between Java/Kotlin code and native C/C++ code."
+            },
+            {
+                title: "Resource Access",
+                sdk: "SDK provides abstracted access to device resources through platform-specific APIs.",
+                ndk: "NDK can provide more direct access to certain hardware components and system resources, potentially with lower overhead."
+            },
+            {
+                title: "Development Workflow",
+                sdk: "SDK development follows a more standardized workflow with integrated tools and consistent patterns.",
+                ndk: "NDK development involves additional build steps, including writing makefiles, compiling native libraries, and managing the integration between native and platform code."
+            }
+        ];
+        
+        // Load differences into the container
+        function loadDifferences() {
+            const container = document.getElementById('differences-container');
+            
+            differences.forEach((diff, index) => {
+                const card = document.createElement('div');
+                card.className = `difference-card fade-in delay-${index % 4 + 1}`;
+                
+                card.innerHTML = `
+                    <h3>${index + 1}. ${diff.title}</h3>
+                    <div class="comparison">
+                        <div class="comparison-item sdk">
+                            <h4>SDK</h4>
+                            <p>${diff.sdk}</p>
+                        </div>
+                        <div class="comparison-item ndk">
+                            <h4>NDK</h4>
+                            <p>${diff.ndk}</p>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        // Add event listeners for interactive elements
+        function addEventListeners() {
+            // Sidebar navigation
+            const navItems = document.querySelectorAll('.sidebar-nav li a');
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all nav items
+                    document.querySelectorAll('.sidebar-nav li').forEach(li => {
+                        li.classList.remove('active');
+                    });
+                    
+                    // Add active class to parent li of clicked link
+                    this.parentElement.classList.add('active');
+                    
+                    // Close mobile menu if open
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('sidebar').classList.remove('active');
+                    }
+                    
+                    // Scroll to the target section
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // Theme toggle
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+            });
+            
+            // Mobile menu toggle
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            mobileMenuToggle.addEventListener('click', function() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('active');
+            });
+            
+            // Close menu button
+            const closeMenu = document.getElementById('closeMenu');
+            if (closeMenu) {
+                closeMenu.addEventListener('click', function() {
+                    document.getElementById('sidebar').classList.remove('active');
+                });
+            }
+            
+            // Overview card links
+            const cardLinks = document.querySelectorAll('.card-link');
+            cardLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get the target section
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    // Update active nav item
+                    document.querySelectorAll('.sidebar-nav li').forEach(li => {
+                        li.classList.remove('active');
+                        if (li.querySelector('a').getAttribute('href') === targetId) {
+                            li.classList.add('active');
+                        }
+                    });
+                    
+                    // Scroll to the target section
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // Handle touch events for better mobile experience
+            document.addEventListener('touchstart', function() {}, {passive: true});
+        }
+        
+        // Add animation classes to elements
+        function animateElements() {
+            const elements = [
+                ...document.querySelectorAll('.overview-card'),
+                ...document.querySelectorAll('.content-card'),
+                ...document.querySelectorAll('.difference-card')
+            ];
+            
+            elements.forEach((element, index) => {
+                element.classList.add('fade-in', `delay-${(index % 4) + 1}`);
+            });
+            
+            // Check for elements in view on scroll
+            const animateOnScroll = () => {
+                elements.forEach(element => {
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const screenPosition = window.innerHeight / 1.3;
+                    
+                    if (elementPosition < screenPosition) {
+                        element.classList.add('fade-in');
+                    }
+                });
+            };
+            
+            // Initial check for elements in view
+            animateOnScroll();
+            
+            // Listen for scroll events
+            window.addEventListener('scroll', animateOnScroll);
+        }
+    </script>
 </body>
 </html>
